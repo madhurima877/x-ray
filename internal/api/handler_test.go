@@ -36,12 +36,12 @@ func (f fakeStore) Customer(_ context.Context, id string) (model.Customer, error
 
 type nop struct{}
 
-func (nop) Received()             {}
-func (nop) Accepted()             {}
-func (nop) BadRequest()           {}
-func (nop) IngressFailOpen()      {}
-func (nop) Publish(model.Verdict) {}
-func (nop) Close() error          { return nil }
+func (nop) Received()           {}
+func (nop) Accepted()           {}
+func (nop) BadRequest()         {}
+func (nop) IngressFailOpen()    {}
+func (nop) Publish(model.Event) {}
+func (nop) Close() error        { return nil }
 
 func TestInspect(t *testing.T) {
 	const good = `{"message_id":"m1","text":"visit https://Bit.ly/abc now"}`

@@ -102,6 +102,16 @@ type Verdict struct {
 	DecidedAt    time.Time `json:"decided_at"`
 }
 
+// Event is the result event published to Kafka (step 12). It carries the
+// sender and URLs on top of the verdict so the consumers (White List
+// collector, KISA reporter) do not need the original message. The relay
+// callback still gets the plain Verdict.
+type Event struct {
+	Verdict
+	Sender string   `json:"sender,omitempty"`
+	URLs   []string `json:"urls,omitempty"`
+}
+
 // URLVerdict is the cached result for one normalised URL.
 type URLVerdict struct {
 	Action Action `json:"action"`

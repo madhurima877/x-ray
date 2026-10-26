@@ -139,7 +139,7 @@ func (p *Pipeline) Process(job model.Job) model.Verdict {
 	}
 
 	// 12 Publish result event (non-blocking).
-	p.publisher.Publish(v)
+	p.publisher.Publish(model.Event{Verdict: v, Sender: job.Message.Sender, URLs: job.URLs})
 	return v
 }
 

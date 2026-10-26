@@ -152,13 +152,13 @@ func (h *Handler) reject(w http.ResponseWriter, status int, msg string) {
 // and no callback follows. The event is still published for audit.
 func (h *Handler) failOpen(w http.ResponseWriter, messageID, customerID, reason string) {
 	h.metrics.IngressFailOpen()
-	h.publisher.Publish(model.Verdict{
+	h.publisher.Publish(model.Event{Verdict: model.Verdict{
 		MessageID:  messageID,
 		CustomerID: customerID,
 		Action:     model.FailOpen,
 		Reasons:    []model.Reason{{Step: "ingress", Action: model.FailOpen, Detail: reason}},
 		DecidedAt:  time.Now().UTC(),
-	})
+	}})
 	writeJSON(w, http.StatusOK, failOpenResponse{MessageID: messageID, Verdict: model.FailOpen, Reason: reason})
 }
 

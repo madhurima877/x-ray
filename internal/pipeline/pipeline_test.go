@@ -95,8 +95,8 @@ func (r *recorder) Send(_ context.Context, _ string, v model.Verdict) error {
 	r.mu.Unlock()
 	return nil
 }
-func (r *recorder) Publish(model.Verdict) {}
-func (r *recorder) Close() error          { return nil }
+func (r *recorder) Publish(model.Event) {}
+func (r *recorder) Close() error        { return nil }
 
 type nopMetrics struct{}
 

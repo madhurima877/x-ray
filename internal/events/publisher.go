@@ -14,7 +14,7 @@ import (
 )
 
 type Publisher interface {
-	Publish(v model.Verdict)
+	Publish(e model.Event)
 	Close() error
 }
 
@@ -43,8 +43,9 @@ func NewKafka(brokers []string, topic string, log *slog.Logger) *Kafka {
 	return k
 }
 
-func (k *Kafka) Publish(v model.Verdict) {
-	b, err := json.Marshal(v)
+func (k *Kafka) Publish(e model.Event) {
+	v := e.Verdict
+	b, err := json.Marshal(e)
 	if err != nil {
 		return
 	}
@@ -62,7 +63,8 @@ type Log struct{ log *slog.Logger }
 
 func NewLog(log *slog.Logger) *Log { return &Log{log: log} }
 
-func (l *Log) Publish(v model.Verdict) {
+func (l *Log) Publish(e model.Event) {
+	v := e.Verdict
 	l.log.Info("verdict", "component", "events", "message_id", v.MessageID, "customer_id", v.CustomerID,
 		"verdict", v.Action, "latency_ms", v.LatencyMS)
 }
