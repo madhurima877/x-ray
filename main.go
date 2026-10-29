@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 type InspectRequest struct {
@@ -14,7 +16,11 @@ type InspectRequest struct {
 }
 
 func main() {
-	jobs := make(chan InspectRequest, 1000)
+	jobs := make(chan InspectRequest, 10)
+
+	for i := 1; i <= 4; i++ {
+		go Worker(i, jobs)
+	}
 	http.HandleFunc("POST /inspect", func(w http.ResponseWriter, r *http.Request) {
 		var req InspectRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -30,7 +36,7 @@ func main() {
 			return
 		}
 		if req.CallbackURL == "" {
-			http.Error(w, "calLback_url is required", http.StatusBadRequest)
+			http.Error(w, "callback_url is required", http.StatusBadRequest)
 			return
 		}
 		if req.Body == "" {
@@ -50,4 +56,18 @@ func main() {
 	if err := http.ListenAndServe(":8080", http.DefaultServeMux); err != nil {
 		log.Fatal(err)
 	}
+}
+func Worker(id int, jobs <-chan InspectRequest) {
+	for job := range jobs {
+		ctx, cancel := context.WithTimeout(context.Background(), 4500*time.Millisecond)
+
+		select {
+		case <-time.After(2 * time.Second):
+			log.Printf("worker %d got %s ALLOWED", id, job.MessageID)
+		case <-ctx.Done():
+			log.Printf("worker %d got %s FAIL_OPEN timeout", id, job.MessageID)
+		}
+		cancel()
+	}
+
 }
