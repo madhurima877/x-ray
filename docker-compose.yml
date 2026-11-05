@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: xray
+      POSTGRES_PASSWORD: xray
+      POSTGRES_DB: xray
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  kafka:
+    image: apache/kafka:3.9.0
+    ports:
+      - "9092:9092"
